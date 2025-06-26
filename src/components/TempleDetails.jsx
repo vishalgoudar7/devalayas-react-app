@@ -3,6 +3,8 @@ import { useParams, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min";
+import { useDispatch } from "react-redux";
+import { addToCart, openCart } from "../redux/cartSlice";
 
 const TempleDetails = () => {
   const { id } = useParams();
@@ -10,6 +12,19 @@ const TempleDetails = () => {
   const [poojas, setPoojas] = useState([]);
   const token = "94c4c11bfac761ba896de08bd383ca187d4e4dc4";
   const BASE_URL = "https://beta.devalayas.com/api/v1/devotee";
+
+  const dispatch = useDispatch();
+
+  
+  const handleAddToCart = (puja) => {
+  dispatch(addToCart({
+    id: puja.id,
+    name: puja.name,
+    god: puja.god?.name || "Unknown",
+    cost: puja.cost || 0,
+  }));
+  dispatch(openCart()); // 👈 This opens the cart drawer
+};
 
   useEffect(() => {
     const fetchTemple = async () => {
@@ -51,18 +66,6 @@ const TempleDetails = () => {
       });
     });
   }, []);
-
-  const addToCart = (pooja) => {
-    const cart = JSON.parse(localStorage.getItem("poojaCart") || "[]");
-    if (!cart.find((item) => item.id === pooja.id)) {
-      cart.push({ id: pooja.id, name: pooja.name, god: pooja.god?.name || "" });
-      localStorage.setItem("poojaCart", JSON.stringify(cart));
-      updateCartCount();
-      alert("Added to cart!");
-    } else {
-      alert("Puja already in cart.");
-    }
-  };
 
   const updateCartCount = () => {
     const cart = JSON.parse(localStorage.getItem("poojaCart") || "[]");
@@ -139,23 +142,23 @@ const TempleDetails = () => {
               {poojas.length === 0 ? (
                 <p className="text-muted">No Pujas found.</p>
               ) : (
-                poojas.map((p) => (
-                  <div className="col-md-6" key={p.id}>
+                poojas.map((puja) => (
+                  <div className="col-md-6" key={puja.id}>
                     <div className="card shadow-sm border h-100">
                       <div className="card-body">
-                        <h6 className="card-title fw-bold">{p.name}</h6>
-                        <p className="text-muted small">God: {p.god?.name || "Unknown"}</p>
-                        <p className="text-muted small">Cost: ₹{p.cost}</p>
-                        <p className="small">{p.details}</p>
+                        <h6 className="card-title fw-bold">{puja.name}</h6>
+                        <p className="text-muted small">God: {puja.god?.name || "Unknown"}</p>
+                        <p className="text-muted small">Cost: ₹{puja.cost}</p>
+                        <p className="small">{puja.details}</p>
                         <Link
-                          to={`/pooja-details/${p.id}`}
+                          to={`/pooja-details/${puja.id}`}
                           className="btn btn-sm btn-outline-primary me-2"
                         >
                           View Details
                         </Link>
                         <button
                           className="btn btn-sm btn-success"
-                          onClick={() => addToCart(p)}
+                          onClick={() => handleAddToCart(puja)}
                         >
                           🛒 Add to Cart
                         </button>

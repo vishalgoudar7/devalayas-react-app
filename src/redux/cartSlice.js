@@ -1,16 +1,18 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
+
+const initialState = {
+  items: [],
+  isOpen: false, // for controlling the drawer
+};
 
 const cartSlice = createSlice({
-  name: "cart",
-  initialState: {
-    items: [], // { id, name, price, templeId }
-  },
+  name: 'cart',
+  initialState,
   reducers: {
     addToCart: (state, action) => {
-      const item = action.payload;
-      const exists = state.items.find(i => i.id === item.id);
+      const exists = state.items.find(item => item.id === action.payload.id);
       if (!exists) {
-        state.items.push(item);
+        state.items.push(action.payload);
       }
     },
     removeFromCart: (state, action) => {
@@ -19,8 +21,14 @@ const cartSlice = createSlice({
     clearCart: (state) => {
       state.items = [];
     },
+    openCart: (state) => {
+      state.isOpen = true;
+    },
+    closeCart: (state) => {
+      state.isOpen = false;
+    },
   },
 });
 
-export const { addToCart, removeFromCart, clearCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, clearCart, openCart, closeCart } = cartSlice.actions;
 export default cartSlice.reducer;

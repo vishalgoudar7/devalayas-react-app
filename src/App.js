@@ -1,20 +1,19 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from"./components/navbar/Navbar";
 import TempleList from "./components/TempleList";
 import TempleDetails from "./components/TempleDetails";
-import CartPage from "./components/CartPage";
-import BookingPage from "./components/BookingPage";
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
+      <Navbar />
       <Routes>
         <Route path="/" element={<TempleList />} />
         <Route path="/temple/:id" element={<TempleDetails />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/booking" element={<BookingPage />} />
+        {/* <Route path="/pooja-details/:id" element={<PoojaDetails />} /> */}
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 
