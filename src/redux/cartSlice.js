@@ -1,18 +1,30 @@
-import { createSlice } from '@reduxjs/toolkit';
+// src/redux/cartSlice.js
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   items: [],
-  isOpen: false, // for controlling the drawer
+  isOpen: false,
 };
 
 const cartSlice = createSlice({
-  name: 'cart',
+  name: "cart",
   initialState,
   reducers: {
+    openCart: (state) => {
+      state.isOpen = true;
+    },
+    closeCart: (state) => {
+      state.isOpen = false;
+    },
     addToCart: (state, action) => {
-      const exists = state.items.find(item => item.id === action.payload.id);
-      if (!exists) {
-        state.items.push(action.payload);
+      const existing = state.items.find(item => item.id === action.payload.id);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        state.items.push({
+          ...action.payload,
+          quantity: action.payload.quantity || 1,
+        });
       }
     },
     removeFromCart: (state, action) => {
@@ -21,14 +33,25 @@ const cartSlice = createSlice({
     clearCart: (state) => {
       state.items = [];
     },
-    openCart: (state) => {
-      state.isOpen = true;
+    incrementQty: (state, action) => {
+      const item = state.items.find(item => item.id === action.payload);
+      if (item) item.quantity += 1;
     },
-    closeCart: (state) => {
-      state.isOpen = false;
+    decrementQty: (state, action) => {
+      const item = state.items.find(item => item.id === action.payload);
+      if (item && item.quantity > 1) item.quantity -= 1;
     },
   },
 });
 
-export const { addToCart, removeFromCart, clearCart, openCart, closeCart } = cartSlice.actions;
+export const {
+  openCart,
+  closeCart,
+  addToCart,
+  removeFromCart,
+  clearCart,
+  incrementQty,
+  decrementQty,
+} = cartSlice.actions;
+
 export default cartSlice.reducer;

@@ -15,16 +15,18 @@ const TempleDetails = () => {
 
   const dispatch = useDispatch();
 
-  
   const handleAddToCart = (puja) => {
-  dispatch(addToCart({
-    id: puja.id,
-    name: puja.name,
-    god: puja.god?.name || "Unknown",
-    cost: puja.cost || 0,
-  }));
-  dispatch(openCart()); // 👈 This opens the cart drawer
-};
+    dispatch(
+      addToCart({
+        id: puja.id,
+        name: puja.name,
+        god: puja.god?.name || "Unknown",
+        price: puja.cost,
+        quantity: 1,
+      })
+    );
+    dispatch(openCart()); // ✅ Open cart drawer
+  };
 
   useEffect(() => {
     const fetchTemple = async () => {
@@ -53,7 +55,6 @@ const TempleDetails = () => {
 
     fetchTemple();
     fetchPoojas();
-    updateCartCount();
   }, [id]);
 
   useEffect(() => {
@@ -66,15 +67,6 @@ const TempleDetails = () => {
       });
     });
   }, []);
-
-  const updateCartCount = () => {
-    const cart = JSON.parse(localStorage.getItem("poojaCart") || "[]");
-    const badge = document.getElementById("cartCount");
-    if (badge) {
-      badge.textContent = cart.length;
-      badge.classList.toggle("d-none", cart.length === 0);
-    }
-  };
 
   if (!temple) return <div className="container mt-4">Loading temple...</div>;
 
@@ -142,23 +134,23 @@ const TempleDetails = () => {
               {poojas.length === 0 ? (
                 <p className="text-muted">No Pujas found.</p>
               ) : (
-                poojas.map((puja) => (
-                  <div className="col-md-6" key={puja.id}>
+                poojas.map((p) => (
+                  <div className="col-md-6" key={p.id}>
                     <div className="card shadow-sm border h-100">
                       <div className="card-body">
-                        <h6 className="card-title fw-bold">{puja.name}</h6>
-                        <p className="text-muted small">God: {puja.god?.name || "Unknown"}</p>
-                        <p className="text-muted small">Cost: ₹{puja.cost}</p>
-                        <p className="small">{puja.details}</p>
+                        <h6 className="card-title fw-bold">{p.name}</h6>
+                        <p className="text-muted small">God: {p.god?.name || "Unknown"}</p>
+                        <p className="text-muted small">Cost: ₹{p.cost}</p>
+                        <p className="small">{p.details}</p>
                         <Link
-                          to={`/pooja-details/${puja.id}`}
+                          to={`/pooja-details/${p.id}`}
                           className="btn btn-sm btn-outline-primary me-2"
                         >
                           View Details
                         </Link>
                         <button
                           className="btn btn-sm btn-success"
-                          onClick={() => handleAddToCart(puja)}
+                          onClick={() => handleAddToCart(p)}
                         >
                           🛒 Add to Cart
                         </button>
